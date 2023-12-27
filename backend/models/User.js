@@ -16,11 +16,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your password"],
   },
-  role: {
-    type: String,
-    enum: ['Admin', 'Team Member'],
-    default: 'Team Member'
-  },
   joiningTime: {
     type: Date,
     default: Date.now

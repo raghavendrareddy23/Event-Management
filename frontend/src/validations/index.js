@@ -44,9 +44,34 @@ export const validate = (group, name, value) => {
   }
   else if (group === "task") {
     switch (name) {
+      case "eventName": {
+        if (!value) return "This field is required";
+        if (value.length > 100) return "Max. limit is 100 characters.";
+        return null;
+      }
       case "description": {
         if (!value) return "This field is required";
         if (value.length > 100) return "Max. limit is 100 characters.";
+        return null;
+      }
+      case "startTime": {
+        if (!value) return "Please select a start time";
+        // Add additional validation logic for start time if needed
+        return null;
+      }
+      case "endTime": {
+        if (!value) return "Please select an end time";
+        // Add additional validation logic for end time if needed
+        return null;
+      }
+      case "location": {
+        if (!value) return "This field is required";
+        // Add additional validation logic for location if needed
+        return null;
+      }
+      case "category": {
+        if (!value) return "This field is required";
+        // Add additional validation logic for category if needed
         return null;
       }
       default: return null;

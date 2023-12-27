@@ -6,7 +6,7 @@ const { validateEmail } = require("../utils/validation");
 
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ msg: "Please fill all the fields" });
     }
@@ -23,15 +23,13 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ msg: "Invalid Email" });
     }
 
-    const userRole = role || 'Team Member';
-
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: "This email is already registered" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ name, email, password: hashedPassword, role: userRole});
+    await User.create({ name, email, password: hashedPassword});
     res.status(200).json({ msg: "Congratulations!! Account has been created for you.." });
   }
   catch (err) {
@@ -57,8 +55,8 @@ exports.login = async (req, res) => {
 
     const token = createAccessToken({ id: user._id });
     delete user.password;
-    const {name, role } = user;
-    res.status(200).json({ token, user: {name, email, role }, status: true, msg: "Login successful.." });
+    const {name } = user;
+    res.status(200).json({ token, user: {name, email }, status: true, msg: "Login successful.." });
   }
   catch (err) {
     console.error(err);

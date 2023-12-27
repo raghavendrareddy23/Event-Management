@@ -33,24 +33,32 @@ exports.getTask = async (req, res) => {
 
 exports.postTask = async (req, res) => {
   try {
-    const { description } = req.body;
-    if (!description) {
-      return res.status(400).json({ status: false, msg: "Description of task not found" });
+    const { eventName, startTime, endTime, location, description, category } = req.body;
+    console.log(req.body);
+    if (!eventName && !startTime && !endTime && !location && !description && !category) {
+      return res.status(400).json({ status: false, msg: "Required fields are missing" });
     }
-    const task = await Task.create({ user: req.user.id, description });
+    const task = await Task.create({
+      user: req.user.id,
+      eventName,
+      startTime,
+      endTime,
+      location,
+      description,
+      category,
+    });
     res.status(200).json({ task, status: true, msg: "Task created successfully.." });
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({ status: false, msg: "Internal Server Error" });
   }
-}
+};
 
 exports.putTask = async (req, res) => {
   try {
-    const { description } = req.body;
-    if (!description) {
-      return res.status(400).json({ status: false, msg: "Description of task not found" });
+    const { eventName, startTime, endTime, location, description, category } = req.body;
+    if (!eventName || !startTime || !endTime || !location || !description || !category) {
+      return res.status(400).json({ status: false, msg: "Required fields are missing" });
     }
 
     if (!validateObjectId(req.params.taskId)) {
@@ -66,14 +74,18 @@ exports.putTask = async (req, res) => {
       return res.status(403).json({ status: false, msg: "You can't update task of another user" });
     }
 
-    task = await Task.findByIdAndUpdate(req.params.taskId, { description }, { new: true });
+    task = await Task.findByIdAndUpdate(
+      req.params.taskId,
+      { eventName, startTime, endTime, location, description, category },
+      { new: true }
+    );
     res.status(200).json({ task, status: true, msg: "Task updated successfully.." });
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({ status: false, msg: "Internal Server Error" });
   }
-}
+};
+
 
 
 exports.deleteTask = async (req, res) => {
@@ -99,3 +111,33 @@ exports.deleteTask = async (req, res) => {
     return res.status(500).json({ status: false, msg: "Internal Server Error" });
   }
 }
+
+exports.getFilteredTasks = async (req, res) => {
+  try {
+    const { startTime, endTime, location, category } = req.query;
+
+    let query = {};
+
+    
+    if (startTime) {
+      query.startTime = { $gte: new Date(startTime) }; 
+    }
+    if (endTime) {
+      query.endTime = { $lte: new Date(endTime) }; 
+    }
+    if (location) {
+      query.location = location; 
+    }
+    if (category) {
+      query.category = category;
+    }
+
+   
+    const tasks = await Task.find(query).lean();
+
+    res.status(200).json({ tasks, status: true, msg: "Filtered tasks retrieved successfully.." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ status: false, msg: "Internal Server Error" });
+  }
+};
