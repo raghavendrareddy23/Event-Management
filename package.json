@@ -1,5 +1,5 @@
 {
-  "name": "task-management",
+  "name": "event-management",
   "version": "1.0.0",
   "description": "A MERN application for basic tasks management",
   "main": "index.js",
