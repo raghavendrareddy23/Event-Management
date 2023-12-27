@@ -33,7 +33,7 @@ app.use("/api/profile", profileRoutes);
 //   app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../frontend/public/index.html")));
 // }
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`Backend is running on port ${port}`);
 });
